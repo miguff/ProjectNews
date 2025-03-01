@@ -7,13 +7,19 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 
 from transformers import PegasusForConditionalGeneration, PegasusTokenizer, pipeline
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+from transformers import LongformerModel, AutoModel, EncoderDecoderModel
+
 import re
 import sys
+import torch
 
 
 
     
 def text_summary_long(text_):
+    nltk.download('stopwords')
+    nltk.download('punkt')
     stopWords = set(stopwords.words("english"))
     words = word_tokenize(text_)
     freqTable = dict()
@@ -58,49 +64,21 @@ def text_summary_long(text_):
 
     return summary
 
-def text_summary_small(text_):
+def text_summary_small(text_, maxlen = None):
     model1 = 'google/pegasus-large'
     model2 = "facebook/bart-large-cnn"
     model3="sshleifer/distilbart-cnn-12-6"
+    model4 = "pszemraj/led-base-book-summary"
     text = text_.replace('\n',"")
     pattern = r'(?<!\d)\d+\.\d+(?!\d)'
     text = re.sub(pattern, lambda match: match.group().replace('.', ','), text)
 
-    text = text.replace('.', '.<eos>')
-    text = text.replace('!', '!<eos>')
-    text = text.replace('?', '?<eos>')
-    sentences = text.split('<eos>')
+    summarizer = pipeline("summarization", model4, torch_dtype=torch.bfloat16)
 
-    max_chunk = 500
-    current_chunk = 0
-    chunks = []
-    for sentence in sentences:
-        if len(chunks) == current_chunk + 1:
-            if len(chunks[current_chunk]) +len(sentence.split(' ')) <= max_chunk:
-                chunks[current_chunk].extend(sentence.split(' '))
-            else:
-                current_chunk += 1
-                chunks.append(sentence.split(' '))
-        else:
-            chunks.append(sentence.split(' '))
+    if maxlen == None:
+        summary = summarizer(text, do_sample=False)
+    else:
+        summary = summarizer(text, max_length=120, do_sample=False)
+    final_summary = summary[0]["summary_text"]
 
-    for chunk_id in range(len(chunks)):
-        chunks[chunk_id] = ' '.join(chunks[chunk_id])
-
-    summarizer = pipeline("summarization", model1)
-    result = summarizer(chunks, max_length=60, min_length=30, do_sample=False)
-    summary = ' '.join([summ["summary_text"] for summ in result])
-    return summary
-
-
-def keywordsExtraction(text_):
-    
-    tokenizer = AutoTokenizer.from_pretrained("ilsilfverskiold/tech-keywords-extractor")
-    model = AutoModelForSeq2SeqLM.from_pretrained("ilsilfverskiold/tech-keywords-extractor")
-
-    
-    inputs = tokenizer([text_], max_length=1024, return_tensors="pt")
-    
-    summary_ids = model.generate(inputs["input_ids"], num_beams=2, min_length=0, max_length=20)
-    result = tokenizer.batch_decode(summary_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
-    return result.split(", ")
+    return final_summary
