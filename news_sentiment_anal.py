@@ -76,9 +76,9 @@ def text_summary_small(text_, maxlen = None):
     summarizer = pipeline("summarization", model4, torch_dtype=torch.bfloat16)
 
     if maxlen == None:
-        summary = summarizer(text, do_sample=False)
+        summary = summarizer(text,max_length = 512, do_sample=False)
     else:
-        summary = summarizer(text, max_length=120, do_sample=False)
+        summary = summarizer(text, max_length=maxlen, do_sample=False)
     final_summary = summary[0]["summary_text"]
 
     return final_summary
