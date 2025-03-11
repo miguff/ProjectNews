@@ -13,7 +13,7 @@ def wordpress(title, body, cikk_url, version, image_to_upload = None, excerpt=No
     url = os.environ["TIPPLEURL"]
     base = os.environ["TIPPLEBASE"]
 
-    user = os.environ["USER"]
+    user = os.environ["TIPPLEUSER"]
     password = os.environ["MIGSITEPW"]
     robot_pw = os.environ["ROBOTPW"]
     pw_bot = os.environ["PWBOT"]
