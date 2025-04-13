@@ -2,3 +2,4 @@ ProjectNews/
 ProjectNews2/
 ProjectNews/bin/pip
 *.env*
+facebookdata.py

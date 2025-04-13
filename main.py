@@ -25,23 +25,13 @@ def main():
     load_dotenv('.env.news')
 
     
-    Topics = ["Hungary", "Politics", "Economics", "Orbán", "Science", "Food", "Environment", "Fishing", "Cooking", "Film", "Travelling", "Finance"]
+    Topics = ["Hungary", "Economics", "Orbán", "Science", "Food", 
+              "Environment", "Fishing", "Cooking", "Film", "Travelling", 
+              "Finance","Sport"]
     randomtopic = random.choice(Topics)
-    print(randomtopic)
     newsapi = os.environ["NEWSAPI"]
     news = NewsApiClient(api_key=newsapi)
     client = OpenAI(api_key=os.environ["DEEPSEEKAPI"], base_url="https://api.deepseek.com")
-
-
-    #Sample url
-    # url = "https://www.euronews.com/green/2024/05/01/weeds-for-the-win-how-to-turn-your-garden-into-a-haven-for-insects"
-    # article = Article(url)
-    # article.download()
-    # article.parse()
-    # text = article.text
-    # print(text)
-    # exit()
-    # clean_text = text.replace('\n', ' ')
 
 
     counter = 0
@@ -113,7 +103,7 @@ def main():
     )
     keyword = keyword_response.choices[0].message.content
 
-    image_name, image_url = image_search(keyword)
+    imagedata = image_search(keyword)
 
     
     title = title_response.choices[0].message.content
@@ -123,40 +113,36 @@ def main():
     print("-----------------")
     print(main_lead)
 
-    html_content = """
-    <div class="wp-block-columns is-layout-flex wp-container-core-columns-is-layout-1 wp-block-columns-is-layout-flex">
-        <div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
-            <figure class="wp-block-image size-large"><img fetchpriority="high" fetchpriority="high" decoding="async" width="1024" height="576" src="https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa-1024x576.jpg" alt="törpeharcsa pucolás" class="wp-image-1734" srcset="https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa-1024x576.jpg 1024w, https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa-300x169.jpg 300w, https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa-768x432.jpg 768w, https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa.jpg 1200w" sizes="(max-width: 1024px) 100vw, 1024px" /></figure>
-            <p><a href="https://tipplee.hu/torpeharcsa-pucolas-4-lepeses-hasznos-utmutato-1714/">Törpeharcsa pucolás: 4 lépéses hasznos útmutató</a></p>
-        </div>
+    # html_content = """
+    # <div class="wp-block-columns is-layout-flex wp-container-core-columns-is-layout-1 wp-block-columns-is-layout-flex">
+    #     <div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
+    #         <figure class="wp-block-image size-large"><img fetchpriority="high" fetchpriority="high" decoding="async" width="1024" height="576" src="https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa-1024x576.jpg" alt="törpeharcsa pucolás" class="wp-image-1734" srcset="https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa-1024x576.jpg 1024w, https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa-300x169.jpg 300w, https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa-768x432.jpg 768w, https://tipplee.hu/wp-content/uploads/2024/07/torpeharcsa.jpg 1200w" sizes="(max-width: 1024px) 100vw, 1024px" /></figure>
+    #         <p><a href="https://tipplee.hu/torpeharcsa-pucolas-4-lepeses-hasznos-utmutato-1714/">Törpeharcsa pucolás: 4 lépéses hasznos útmutató</a></p>
+    #     </div>
 
-        <div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
-            <figure class="wp-block-image size-large"><img decoding="async" width="1024" height="576" src="https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu-1024x576.jpg" alt="rekord vörösszárnyú" class="wp-image-3753" srcset="https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu-1024x576.jpg 1024w, https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu-300x169.jpg 300w, https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu-768x432.jpg 768w, https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu.jpg 1200w" sizes="(max-width: 1024px) 100vw, 1024px" /></figure>
-            <p><a href="https://tipplee.hu/lenyugozo-rekord-vorosszarnyu-keszeg-1-kg-nal-3750/">Lenyűgöző rekord vörösszárnyú keszeg: 1 kg-nál mennyivel nagyobb?</a></p>
-        </div>
+    #     <div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
+    #         <figure class="wp-block-image size-large"><img decoding="async" width="1024" height="576" src="https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu-1024x576.jpg" alt="rekord vörösszárnyú" class="wp-image-3753" srcset="https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu-1024x576.jpg 1024w, https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu-300x169.jpg 300w, https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu-768x432.jpg 768w, https://tipplee.hu/wp-content/uploads/2024/11/rekord-vorosszarnyu.jpg 1200w" sizes="(max-width: 1024px) 100vw, 1024px" /></figure>
+    #         <p><a href="https://tipplee.hu/lenyugozo-rekord-vorosszarnyu-keszeg-1-kg-nal-3750/">Lenyűgöző rekord vörösszárnyú keszeg: 1 kg-nál mennyivel nagyobb?</a></p>
+    #     </div>
 
-        <div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
-            <figure class="wp-block-image size-large"><img decoding="async" width="1024" height="576" src="https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany-1024x576.jpg" alt="Csukaállomány" class="wp-image-4332" srcset="https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany-1024x576.jpg 1024w, https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany-300x169.jpg 300w, https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany-768x432.jpg 768w, https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany.jpg 1200w" sizes="(max-width: 1024px) 100vw, 1024px" /></figure>
-            <p><a href="https://tipplee.hu/a-csuka-allomany-csokkenese-3-nyomaszto-magyarazat-4331/">A csuka állomány csökkenése – 3 nyomasztó magyarázat</a></p>
-        </div>
-    </div>
-    """
+    #     <div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
+    #         <figure class="wp-block-image size-large"><img decoding="async" width="1024" height="576" src="https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany-1024x576.jpg" alt="Csukaállomány" class="wp-image-4332" srcset="https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany-1024x576.jpg 1024w, https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany-300x169.jpg 300w, https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany-768x432.jpg 768w, https://tipplee.hu/wp-content/uploads/2025/01/Csuka_allomany.jpg 1200w" sizes="(max-width: 1024px) 100vw, 1024px" /></figure>
+    #         <p><a href="https://tipplee.hu/a-csuka-allomany-csokkenese-3-nyomaszto-magyarazat-4331/">A csuka állomány csökkenése – 3 nyomasztó magyarázat</a></p>
+    #     </div>
+    # </div>
+    # """
 
     main_article = "".join(f"<p>{para.strip()}</p>" for para in main_article.split("\n") if para.strip())
 
 
-    main_article = f"{main_article}<br><br>{html_content}"
+    main_article = f"{main_article}<br>"#<br>{html_content}"
 
-    wp_url = wordpress(title = title, body=main_article, cikk_url=url, image_to_upload=image_name, version="V1", excerpt=main_lead, image_url=image_url)
-    
-    os.remove(image_name)
 
-    sys.exit()
-    text = text + f"\n Source:{wp_url}"
-    for i in keywords:
-        text = text + f" #{i}, "
+
+    wp_url = wordpress(title = title, body=main_article, cikk_url=url, imagedata=imagedata, version="V1", excerpt=main_lead)
     
-    #postToFacebook(text)
+    os.remove(imagedata[0])
+
 
 
 
@@ -181,8 +167,11 @@ def image_search(search_term):
         img_data = requests.get(image_url).content
         with open(image_name, "wb") as img_file:
             img_file.write(img_data)
-        sourceurl = response["results"][0]['links']['download']
-    return image_name,  sourceurl
+        
+        sourceurl = response["results"][0]["links"]["html"]
+        sourcesite = response["results"][0]["user"]["links"]["html"]
+        imagetakenby = response["results"][0]["user"]["name"]
+    return [image_name,  sourceurl, sourcesite, imagetakenby, image_url]
 
 
 

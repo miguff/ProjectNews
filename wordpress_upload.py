@@ -1,4 +1,4 @@
-#WP_jelszÃ³ a bothoz a mig-wp-hez: 0ypQ By11 fvpA IaOU 4BZd LNDx
+#WP_jelsz?? a bothoz a mig-wp-hez: 0ypQ By11 fvpA IaOU 4BZd LNDx
 
 import requests
 import json
@@ -9,7 +9,7 @@ import os
 #import facebookdata
 
 
-def wordpress(title, body, cikk_url, version, image_to_upload = None, excerpt=None, image_url = None):
+def wordpress(title, body, cikk_url, version, imagedata, excerpt=None):
     url = os.environ["TIPPLEURL"]
     base = os.environ["TIPPLEBASE"]
 
@@ -24,12 +24,16 @@ def wordpress(title, body, cikk_url, version, image_to_upload = None, excerpt=No
 
     header = {'Authorization':'Basic ' + token.decode('utf-8')}
 
-
+    image_to_upload = imagedata[0]
+    image_url = imagedata[1]
+    imagesite = imagedata[2]
+    imagetakenby = imagedata[3]
+    rawurl = imagedata[4]
 
     if image_to_upload == None:
         post = {
         'title':f'{title}',
-        'content':f'<!-- wp:paragraph -->{body}  <br><br>  Ez a cikk a Neural News AI ({version}) verziójával készült. Forrás: {cikk_url}<!-- /wp:paragraph --> ',
+        'content':f'<!-- wp:paragraph -->{body}  <br><br>  Ez a cikk a Neural News AI ({version}) verzi�j�val k�sz�lt. Forr�s: {cikk_url}<!-- /wp:paragraph --> ',
         'status':'publish',
         'categories': [267],
         "comment_status":"closed",
@@ -45,18 +49,23 @@ def wordpress(title, body, cikk_url, version, image_to_upload = None, excerpt=No
     }
 
         image = requests.post(url + '/media', headers=header, files=media)
-        imageURL = str(json.loads(image.content)['source_url'])
         imagenumber = str(json.loads(image.content)['id'])
 
         post = {
         'title':f'{title}',
-        'content':f'<!-- wp:paragraph -->{body} <br><p> Ez a cikk a Neural News AI ({version}) verziójával készült. <br>Forrás: <a href="{cikk_url}" target="_blank" rel="noopener noreferrer">{cikk_url}</a>. <br>A kép forrása: {image_url}</p><!-- /wp:paragraph -->',
+        'content' : f'''<!-- wp:paragraph -->
+            <p>{body}</p>
+            <p>Ez a cikk a Neural News AI ({version}) verziójával készült.</p>
+            <p>Forrás: <a href="{cikk_url}" target="_blank" rel="noopener noreferrer">{cikk_url}</a>.</p>
+            <p>A képet <a href="{image_url}" target="_blank" rel="noopener noreferrer">{imagetakenby}</a> készítette, mely az <a href="{imagesite}" target="_blank" rel="noopener noreferrer">Unsplash</a>-on található.</p>
+            <!-- /wp:paragraph -->''',
         'status':'publish',
         'categories': [267],
         "comment_status":"closed",
         "ping_status": "closed",
         "excerpt": f'{excerpt}',
-        "featured_media" : imagenumber
+        "featured_media" : imagenumber,
+        #"meta" : {"fifu_image_url": rawurl}
         }
 
     r = requests.post(url + "/posts", headers=header, json=post)
@@ -68,7 +77,7 @@ def wordpress(title, body, cikk_url, version, image_to_upload = None, excerpt=No
 
     string = post["title"]
     string = string.lower()
-    string = string.replace(',','').replace(":",'').replace(" ", "-").replace('Ã¡','a').replace('Ã©','e').replace('Ã¶','o').replace('Ã¼','u').replace('Ã³','o').replace('Å','o').replace('Ãº','u').replace('Å±','u').replace('Ã­','i')
+    string = string.replace(',','').replace(":",'').replace(" ", "-").replace('??','a').replace('?�','e').replace('?�','o').replace('??','u').replace('??','o').replace('??','o').replace('??','u').replace('?�','u').replace('?�','i')
     url_final = base + string
     return url_final
 
